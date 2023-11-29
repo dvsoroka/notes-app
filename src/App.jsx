@@ -16,14 +16,41 @@ import {nanoid} from "nanoid"
  *    into a real JS array.
  */
 
+    /**
+     * Challenge #2:
+     * Lazily initialize our `notes` state so it doesn't
+     * reach into localStorage on every single re-render
+     * of the App component
+     */
+
 export default function App() {
 //#1   const [notes, setNotes] = React.useState([])
 
-    const [notes, setNotes] = React.useState(JSON.parse(localStorage.getItem("notes")) || [])
+//#2    const [notes, setNotes] = React.useState( JSON.parse(localStorage.getItem("notes")) || [])
+// Lazy state initialization:
+    const [notes, setNotes] = React.useState( 
+        () => JSON.parse(localStorage.getItem("notes")) || []
+    )
     const [currentNoteId, setCurrentNoteId] = React.useState(
         (notes[0] && notes[0].id) || ""
     )
-    
+//  const [state, setState] = React.useState(console.log("State initialization"))
+
+// lazy state initialization:
+/*
+    const [state, setState] = React.useState(
+        function() {
+            return console.log("State initialization")
+        }
+    )
+*/
+// But then any changes I make don't re-run that code
+// or: 
+    const [state, setState] = React.useState(
+        () => console.log("State initialization")
+    )
+
+
     React.useEffect(() => {
         localStorage.setItem("notes", JSON.stringify(notes))
     }, [notes])
