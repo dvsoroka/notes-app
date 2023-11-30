@@ -14,7 +14,6 @@ export default function Sidebar(props) {
  * Hint 2: See if you can split the string into an array
  * using the "\n" newline character as the divider
  */
-    
     const noteElements = props.notes.map((note, index) => (
         <div key={note.id}>
             <div

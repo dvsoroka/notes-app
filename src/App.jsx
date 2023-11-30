@@ -24,6 +24,11 @@ import {nanoid} from "nanoid"
      */
 
 export default function App() {
+       /**
+     * Challenge #4: When the user edits a note, reposition
+     * it in the list of notes to the top of the list
+     */
+    
 //#1   const [notes, setNotes] = React.useState([])
 
 //#2    const [notes, setNotes] = React.useState( JSON.parse(localStorage.getItem("notes")) || [])
@@ -71,11 +76,37 @@ export default function App() {
     }
     
     function updateNote(text) {
-        setNotes(oldNotes => oldNotes.map(oldNote => {
-            return oldNote.id === currentNoteId
-                ? { ...oldNote, body: text }
-                : oldNote
-        }))
+        // Put the most recently-modified note at the top
+        setNotes(oldNotes => {
+            const newArray = []
+            for (let i = 0; i < oldNotes.length; i++) {
+                const oldNote = oldNotes[i]
+                if (oldNote.id === currentNoteId) {
+                    newArray.unshift({ ...oldNote, body: text }) 
+                }
+                else {
+                    newArray.push(oldNote)
+                }
+            }
+            return newArray
+            // Create a new empty array
+            // Loop over the original array
+                // if the id matches
+                    // put the updated note at the 
+                    // beginning of the new array
+                // else
+                    // push the old note to the end
+                    // of the new array
+            // return the new array
+        })
+        
+        // This does not rearrange the notes
+        // setNotes(oldNotes => oldNotes.map(oldNote => {
+        //     return oldNote.id === currentNoteId
+        //         ? { ...oldNote, body: text }
+        //         : oldNote
+        // }))
+
     }
     
     function findCurrentNote() {
