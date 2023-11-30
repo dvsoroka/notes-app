@@ -47,12 +47,14 @@ export default function App() {
 // But then any changes I make don't re-run that code
 // or: 
     const [state, setState] = React.useState(
-        () => console.log("State initialization")
+       () => console.log("State initialization")
     )
 
 
     React.useEffect(() => {
         localStorage.setItem("notes", JSON.stringify(notes))
+//#3    console.log(notes[0].body)                      //example 1
+//#3    console.log(JSON.stringify(notes[0].body) )     //example 2
     }, [notes])
 
     function createNewNote() {
