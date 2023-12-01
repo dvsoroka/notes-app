@@ -16,18 +16,49 @@ import {nanoid} from "nanoid"
  *    into a real JS array.
  */
 
-    /**
-     * Challenge #2:
-     * Lazily initialize our `notes` state so it doesn't
-     * reach into localStorage on every single re-render
-     * of the App component
-     */
+  /**
+   * Challenge #2:
+   * Lazily initialize our `notes` state so it doesn't
+   * reach into localStorage on every single re-render
+   * of the App component
+   */
 
 export default function App() {
        /**
      * Challenge #4: When the user edits a note, reposition
      * it in the list of notes to the top of the list
      */
+
+       /**
+        * Challenge #5 : complete and implement the deleteNote function
+        * https://scrimba.com/learn/learnreact/notes-app-delete-note-cg8gPwc6
+        * Hints: 
+        * 1. What array method can be used to return a new
+        *    array that has filtered out an item based 
+        *    on a condition?
+        * 2. Notice the parameters being based to the function
+        *    and think about how both of those parameters
+        *    can be passed in during the onClick event handler
+        */
+       
+ //      function deleteNote(event, noteId) {
+ // My version//   function deleteNote(event, ) {
+ // My version//          event.stopPropagation()
+ // My version//          findCurrentNote()
+ // My version//          // Your code here
+ // My version//          //console.log( notes.filter(note => note.id !== noteId))
+ // My version//          console.log(event.target.parentNode.parentNode, currentNoteId )
+ // My version//          console.log( notes.filter(note => note)) 
+ // My version//          console.log( notes.filter(note => note.id !== currentNoteId))
+ // My version//          setNotes(notes.filter(note => note.id !== currentNoteId)) 
+    function deleteNote(event, noteId) {
+        event.stopPropagation()
+        console.log("deleted note", noteId)
+        // Your code here
+// It Works!    setNotes(notes.filter(note => note.id !== noteId))
+        setNotes(oldNotes => oldNotes.filter(note => note.id !== noteId))
+        
+    }
     
 //#1   const [notes, setNotes] = React.useState([])
 
@@ -82,7 +113,9 @@ export default function App() {
             for (let i = 0; i < oldNotes.length; i++) {
                 const oldNote = oldNotes[i]
                 if (oldNote.id === currentNoteId) {
-                    newArray.unshift({ ...oldNote, body: text }) 
+//                  newArray.unshift({ ...oldNote, body: text }) 
+                    const newElement = { ...oldNote, body: text }
+                    newArray.unshift(newElement)
                 }
                 else {
                     newArray.push(oldNote)
@@ -130,6 +163,30 @@ export default function App() {
                     currentNote={findCurrentNote()}
                     setCurrentNoteId={setCurrentNoteId}
                     newNote={createNewNote}
+                    deleteNote={deleteNote}
+                    // deleteNote={() => deleteNote(event, noteId)}
+                    // deleteNoteId={deleteNoteId}
+// My version//                    deleteNote={() => deleteNote(event)}
+
+        //             <Box 
+        //             key={square.id}
+        //             id={square.id} 
+        //             on={square.on}
+        //             toggle={toggle}  
+          
+        //           />
+        // */
+        // // the above <Box /> component invocation may be rewritten using closure:
+        //           <Box 
+        //             key={square.id}
+        //             on={square.on}
+        // //          toggle={toggle}
+        //             toggle={() => toggle(square.id)}      // for closure variant
+        
+        //          />
+
+
+
                 />
                 {
                     currentNoteId && 

@@ -26,6 +26,19 @@ export default function Sidebar(props) {
 {/*#3           <h4 className="text-snippet">Note {index + 1}</h4>  */}
 {/*#3           <h4 className="text-snippet">{index + 1} {note.body.split("\n")[0]} </h4>      // First variant */}
                 <h4 className="text-snippet">{note.body.split("/n")[0]}</h4>  
+                <button 
+                    className="delete-btn"
+                    // Your onClick event handler here
+
+                    // // onClick={() => props.toggle(props.id)} 
+                    // //  onClick={props.toggle}        // for variant using closure
+
+                    // // onClick={() => props.deleteNote(note.id)}
+// My version//     onClick={props.deleteNote}
+                    onClick={(event) => props.deleteNote(event, note.id)}       // https://scrimba.com/learn/learnreact/notes-app-delete-note-cg8gPwc6
+                >
+                    <i className="gg-trash trash-icon"></i>
+                </button>
             </div>
         </div>
     ))
