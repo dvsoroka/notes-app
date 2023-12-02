@@ -4,6 +4,15 @@ import Editor from "./components/Editor"
 import { data } from "./data"
 import Split from "react-split"
 import {nanoid} from "nanoid"
+//To synchronize our notes with firebase DB:
+import { 
+    onSnapshot, 
+    addDoc, 
+    doc, 
+    deleteDoc,
+    setDoc 
+} from "firebase/firestore" // https://scrimba.com/learn/learnreact/onsnapshot-part-1-coc5742aba9d8579a290d5cdc
+import { notesCollection, db } from "./firebase"
 
 /** https://scrimba.com/learn/learnreact/notes-app-sync-notes-with-localstorage-co3c5495b8d7949e81b79988a
  * Challenge #1:
@@ -50,27 +59,41 @@ export default function App() {
  // My version//          console.log(event.target.parentNode.parentNode, currentNoteId )
  // My version//          console.log( notes.filter(note => note)) 
  // My version//          console.log( notes.filter(note => note.id !== currentNoteId))
- // My version//          setNotes(notes.filter(note => note.id !== currentNoteId)) 
-    function deleteNote(event, noteId) {
-        event.stopPropagation()
-        console.log("deleted note", noteId)
-        // Your code here
-// It Works!    setNotes(notes.filter(note => note.id !== noteId))
-        setNotes(oldNotes => oldNotes.filter(note => note.id !== noteId))
-        
+ // My version//          setNotes(notes.filter(note => note.id !== currentNoteId))
+ 
+//We're going to use firebase DB//  https://scrimba.com/learn/learnreact/delete-note-co47f4a75a908a771ab1fdd89
+//We're going to use firebase DB//   function deleteNote(event, noteId) {
+//We're going to use firebase DB//       event.stopPropagation()
+//We're going to use firebase DB//       console.log("deleted note", noteId)
+//We're going to use firebase DB//       // Your code here
+//We're going to use firebase DB//// It Works!    setNotes(notes.filter(note => note.id !== noteId))
+//We're going to use firebase DB//        setNotes(oldNotes => oldNotes.filter(note => note.id !== noteId))        
+//We're going to use firebase DB//    }
+
+    async function deleteNote(noteId) {
+        const docRef = doc(db, "notes", noteId)
+        await deleteDoc(docRef)
     }
     
 //#1   const [notes, setNotes] = React.useState([])
 
 //#2    const [notes, setNotes] = React.useState( JSON.parse(localStorage.getItem("notes")) || [])
+
 // Lazy state initialization:
-    const [notes, setNotes] = React.useState( 
-        () => JSON.parse(localStorage.getItem("notes")) || []
-    )
+// Now we use Firebase DB! //    const [notes, setNotes] = React.useState( 
+// Now we use Firebase DB! //        () => JSON.parse(localStorage.getItem("notes")) || []
+// Now we use Firebase DB! //    )
+// Now we use Firebase DB as follows :
+    const [notes, setNotes] = React.useState([])
+
     const [currentNoteId, setCurrentNoteId] = React.useState(
 //      (notes[0] && notes[0].id) || ""                 // refactored as follows according to https://scrimba.com/learn/learnreact/small-refactors-co26846179aa77697a78d5569
-        (notes[0]?.id) || ""
+//        (notes[0]?.id) || ""          //refactored again https://scrimba.com/learn/learnreact/update-note-part-1-co03b42fba9ac46680b1240a1
+        ""
     )
+    
+    console.log(currentNoteId)
+   // alert("currentNoteId :", currentNoteId )
 
     const currentNote = notes.find(note => note.id === currentNoteId) || notes[0]
 
@@ -91,26 +114,51 @@ export default function App() {
     )
 
 
-    React.useEffect(() => {
-        localStorage.setItem("notes", JSON.stringify(notes))
+//We're going to use firebase DB//     React.useEffect(() => {
+//We're going to use firebase DB//      localStorage.setItem("notes", JSON.stringify(notes))    
+
+
 //#3    console.log(notes[0].body)                      //example 1
 //#3    console.log(JSON.stringify(notes[0].body) )     //example 2
 //#3    console.log(notes[0].body.split("\n"))          //example 3
+//We're going to use firebase DB//     }, [notes])
+    React.useEffect(() => {
+        const unsubscribe = onSnapshot(notesCollection, function(snapshot) {
+            // Sync up our local notes array with the snapshot data
+            console.log("THINGS ARE CHANGING!")
+            const notesArr = snapshot.docs.map(doc => ({
+                ...doc.data(),
+                id: doc.id
+            }))
+            setNotes(notesArr)
+        })
+     // return () => unsubscribe()   
+        return unsubscribe
+    }, [])
+
+    React.useEffect(() => {
+        if (!currentNoteId) {
+            setCurrentNoteId(notes[0]?.id)
+        }
     }, [notes])
 
-    function createNewNote() {
+// Now we use Firebase DB! //     function createNewNote() {
+    async function createNewNote() {
         const newNote = {
-            id: nanoid(),
+// Now we use Firebase DB! //            id: nanoid(),
             body: "# Type your markdown note's title here"
         }
-        setNotes(prevNotes => [newNote, ...prevNotes])
-        setCurrentNoteId(newNote.id)
+// Now we use Firebase DB! //        setNotes(prevNotes => [newNote, ...prevNotes])
+        const newNoteRef = await addDoc(notesCollection, newNote)
+        setCurrentNoteId(newNoteRef.id)
  //       console.log(notes)
  //Wrong!       const stringToSave = JSON.stringify(notes)
  //       console.log(stringToSave)
  //Wrong!       localStorage.setItem("Mynotes", stringToSave);
     }
-    
+
+ /* // Totally refactor this function for Firebase DB 
+
     function updateNote(text) {
         // Put the most recently-modified note at the top
         setNotes(oldNotes => {
@@ -146,7 +194,14 @@ export default function App() {
         // }))
 
     }
-    
+
+Totally refactor this function for Firebase DB https://scrimba.com/learn/learnreact/update-note-part-2-cobde4008846e662c0b7e0b0b
+ */
+    async function updateNote(text) {
+        const docRef = doc(db, "notes", currentNoteId)
+        await setDoc(docRef, { body: text }, { merge: true })
+    }
+
     // The following function was refactored to new "currentNote" variable
     // according to https://scrimba.com/learn/learnreact/small-refactors-co26846179aa77697a78d5569
     //
@@ -197,15 +252,15 @@ export default function App() {
 
 
                 />
-                {
-                    currentNoteId && 
-                    notes.length > 0 &&
+{/*                {
+                    currentNoteId &&             // according to https://scrimba.com/learn/learnreact/update-note-part-1-co03b42fba9ac46680b1240a1
+                    notes.length > 0 &&          // we can get rid of conditional rendering  */}
                     <Editor 
  //                     currentNote={findCurrentNote()}
                         currentNote={currentNote}
                         updateNote={updateNote} 
                     />
-                }
+{/*                }                            // we can get rid of conditional rendering */}
             </Split>
             :
             <div className="no-notes">

@@ -15,7 +15,8 @@ export default function Editor({ currentNote, updateNote }) {
     return (
         <section className="pane editor">
             <ReactMde
-                value={currentNote.body}
+//              value={currentNote.body}
+                value={currentNote?.body}           // Use optional chaining as described in https://scrimba.com/learn/learnreact/update-note-part-1-co03b42fba9ac46680b1240a1
                 onChange={updateNote}
                 selectedTab={selectedTab}
                 onTabChange={setSelectedTab}

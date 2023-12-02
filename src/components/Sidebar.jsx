@@ -35,7 +35,9 @@ export default function Sidebar(props) {
 
                     // // onClick={() => props.deleteNote(note.id)}
 // My version//     onClick={props.deleteNote}
-                    onClick={(event) => props.deleteNote(event, note.id)}       // https://scrimba.com/learn/learnreact/notes-app-delete-note-cg8gPwc6
+//We're going to use firebase DB//                    onClick={(event) => props.deleteNote(event, note.id)}       // https://scrimba.com/learn/learnreact/notes-app-delete-note-cg8gPwc6
+//We're going to use firebase DB// https://scrimba.com/learn/learnreact/delete-note-co47f4a75a908a771ab1fdd89
+                    onClick={() => props.deleteNote(note.id)}
                 >
                     <i className="gg-trash trash-icon"></i>
                 </button>

@@ -39,3 +39,31 @@ var circleArea = Math.PI * (circleRadius * circleRadius);
 console.log("circleArea: ", circleArea)
 
 console.log(3**2);
+
+// Optional chaining (?.)
+
+const adventurer = {
+	
+    name: 'Alice',
+    cat: {
+      name: 'Dinah',
+    },
+    someExistentMethod() {
+        console.log("my name is", this.name)
+      }
+  };
+  
+  const petName = adventurer.cat?.name;
+  console.log(petName);
+  // Expected output:  Dinah
+
+  const dogName = adventurer.dog?.name;
+  console.log(dogName);
+  // Expected output: undefined
+  
+  console.log(adventurer.someNonExistentMethod?.());
+  // Expected output: undefined
+
+  console.log(adventurer.someExistentMethod?.());
+  // Expected output: my name is Alice
+  
