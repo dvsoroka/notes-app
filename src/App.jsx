@@ -68,8 +68,12 @@ export default function App() {
         () => JSON.parse(localStorage.getItem("notes")) || []
     )
     const [currentNoteId, setCurrentNoteId] = React.useState(
-        (notes[0] && notes[0].id) || ""
+//      (notes[0] && notes[0].id) || ""                 // refactored as follows according to https://scrimba.com/learn/learnreact/small-refactors-co26846179aa77697a78d5569
+        (notes[0]?.id) || ""
     )
+
+    const currentNote = notes.find(note => note.id === currentNoteId) || notes[0]
+
 //  const [state, setState] = React.useState(console.log("State initialization"))
 
 // lazy state initialization:
@@ -91,6 +95,7 @@ export default function App() {
         localStorage.setItem("notes", JSON.stringify(notes))
 //#3    console.log(notes[0].body)                      //example 1
 //#3    console.log(JSON.stringify(notes[0].body) )     //example 2
+//#3    console.log(notes[0].body.split("\n"))          //example 3
     }, [notes])
 
     function createNewNote() {
@@ -142,11 +147,14 @@ export default function App() {
 
     }
     
-    function findCurrentNote() {
-        return notes.find(note => {
-            return note.id === currentNoteId
-        }) || notes[0]
-    }
+    // The following function was refactored to new "currentNote" variable
+    // according to https://scrimba.com/learn/learnreact/small-refactors-co26846179aa77697a78d5569
+    //
+    // function findCurrentNote() {
+    //     return notes.find(note => {
+    //         return note.id === currentNoteId
+    //     }) || notes[0]
+    // }
     
     return (
         <main>
@@ -160,7 +168,8 @@ export default function App() {
             >
                 <Sidebar
                     notes={notes}
-                    currentNote={findCurrentNote()}
+//                  currentNote={findCurrentNote()}             // refactored accoring to https://scrimba.com/learn/learnreact/small-refactors-co26846179aa77697a78d5569
+                    currentNote={currentNote}
                     setCurrentNoteId={setCurrentNoteId}
                     newNote={createNewNote}
                     deleteNote={deleteNote}
@@ -192,7 +201,8 @@ export default function App() {
                     currentNoteId && 
                     notes.length > 0 &&
                     <Editor 
-                        currentNote={findCurrentNote()} 
+ //                     currentNote={findCurrentNote()}
+                        currentNote={currentNote}
                         updateNote={updateNote} 
                     />
                 }
