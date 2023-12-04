@@ -14,24 +14,34 @@ import { notesCollection, db } from "./firebase"
 export default function App() {
     const [notes, setNotes] = React.useState([])
     const [currentNoteId, setCurrentNoteId] = React.useState("")
-    
+
+/**  DEBOUNCING
+  - Delay the request (for example, to remote database or searsch service) 
+    for a specific amount of time (e.g. 500ms)
+  - If another request happens within the specified time,
+    cancel the previous request and set up a new delay for the new request
+*/
+    /**https://scrimba.com/learn/learnreact/debouncing-updates-part-2-co1cc45f68cc600de2cd28cda
+     * Challenge #d :
+     * 1. Set up a new state variable called `tempNoteText`. Initialize 
+     *    it as an empty string
+     * 2. Change the Editor so that it uses `tempNoteText` and 
+     *    `setTempNoteText` for displaying and changing the text instead
+     *    of dealing directly with the `currentNote` data.
+     * 3. Create a useEffect that, if there's a `currentNote`, sets
+     *    the `tempNoteText` to `currentNote.body`. (This copies the
+     *    current note's text into the `tempNoteText` field so whenever 
+     *    the user changes the currentNote, the editor can display the 
+     *    correct text.
+     * 4. TBA
+     */
+    const [tempNoteText, setTempNoteText] = React.useState("")
+
     const currentNote =
         notes.find(note => note.id === currentNoteId)
         || notes[0]
     
     const sortedNotes = notes.sort((a, b) => b.updatedAt - a.updatedAt)
-    /**
-     * Challenge:
-     * 1. ✅ Add createdAt and updatedAt properties to the notes
-     *    When a note is first created, set the `createdAt` and `updatedAt`
-     *    properties to `Date.now()`. Whenever a note is modified, set the
-     *    `updatedAt` property to `Date.now()`.
-     * 
-     * 2. Create a new `sortedNotes` array (doesn't need to be saved 
-     *    in state) that orders the items in the array from 
-     *    most-recently-updated to least-recently-updated.
-     *    This may require a quick Google search.
-     */
 
     React.useEffect(() => {
         const unsubscribe = onSnapshot(notesCollection, function (snapshot) {
@@ -49,6 +59,30 @@ export default function App() {
             setCurrentNoteId(notes[0]?.id)
         }
     }, [notes])
+
+    React.useEffect(() => {
+        if(currentNote) {
+            setTempNoteText(currentNote.body)
+        }
+    }, [currentNote])
+
+     /**
+     * Create an effect that runs any time the tempNoteText changes
+     * Delay the sending of the request to Firebase
+     *  uses setTimeout
+     * use clearTimeout to cancel the timeout
+     * https://scrimba.com/learn/learnreact/debouncing-updates-part-3-co3224f249bca482bd4d12690
+     */   
+
+    React.useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            if (tempNoteText !== currentNote.body) {
+                updateNote(tempNoteText)        
+            }
+        }, 500)
+        return () =>  clearTimeout(timeoutId)
+
+    }, [tempNoteText])
 
     async function createNewNote() {
         const newNote = {
@@ -85,6 +119,7 @@ export default function App() {
                         className="split"
                     >
                         <Sidebar
+//                          notes={notes}   // notes array is also sorted after applying .sort() method         ;)
                             notes={sortedNotes}
                             currentNote={currentNote}
                             setCurrentNoteId={setCurrentNoteId}
@@ -94,6 +129,8 @@ export default function App() {
                         <Editor
                             currentNote={currentNote}
                             updateNote={updateNote}
+                            tempNoteText={tempNoteText}
+                            setTempNoteText={setTempNoteText}
                         />
                     </Split>
                     :

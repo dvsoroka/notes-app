@@ -66,4 +66,39 @@ const adventurer = {
 
   console.log(adventurer.someExistentMethod?.());
   // Expected output: my name is Alice
-  
+
+
+  let arr = [ 1, 2, 15, 7, 95 ];
+
+  console.log("Unsorted array: ", arr);
+  arr.sort();
+  console.log("Sorted array : ", arr);
+
+  let result = arr.reduce((sum, current) => sum + current, 0);
+  console.log("Sum of all array elements: ",  result);
+
+
+//   https://www.freecodecamp.org/news/how-to-sort-javascript-array-accurately/
+let originalArray = [2, 1, 3];
+let sortedArray = originalArray.slice().sort((a, b) => a - b);
+
+console.log(originalArray); // Output: [2, 1, 3]
+console.log(sortedArray); // Output: [1, 2, 3]
+
+
+let array = [1, 2, 5];
+
+// начиная с индекса -1 (перед последним элементом)
+// удалить 0 элементов,
+// затем вставить числа 3 и 4
+array.splice(-1, 0, 3, 4);
+
+alert( array ); // 1,2,3,4,5
+
+/**  DEBOUNCING
+  - Delay the request (for example, to remote database or searsch service) 
+    for a specific amount of time (e.g. 500ms)
+  - If another request happens within the specified time,
+    cancel the previous request and set up a new delay for the new request
+
+*/
